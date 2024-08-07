@@ -7,11 +7,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Stack;
 
-public class BasicCalculatorGUI extends JFrame {
+public class TwoaBasicCalculatorGUI extends JFrame {
 
     private final JTextField inputField;
 
-    public BasicCalculatorGUI() {
+    public TwoaBasicCalculatorGUI() {
         // Set up the frame
         setTitle("Basic Calculator GUI");
         setSize(400, 500);
@@ -150,7 +150,7 @@ public class BasicCalculatorGUI extends JFrame {
     public static void main(String[] args) {
         // Create and display the calculator GUI
         SwingUtilities.invokeLater(() -> {
-            BasicCalculatorGUI calculator = new BasicCalculatorGUI();
+            TwoaBasicCalculatorGUI calculator = new TwoaBasicCalculatorGUI();
             calculator.setVisible(true);
         });
     }

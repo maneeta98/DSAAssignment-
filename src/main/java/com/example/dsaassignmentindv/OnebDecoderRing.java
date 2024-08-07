@@ -1,6 +1,6 @@
 package com.example.dsaassignmentindv;
 
-public class DecoderRing {
+public class OnebDecoderRing {
 
     // Function to decipher the message
     public static String decipherMessage(String s, int[][] shifts) {

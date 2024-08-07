@@ -3,7 +3,7 @@ package com.example.dsaassignmentindv;
 
 import java.util.TreeSet;
 
-public class MovieTheaterSeating {
+public class TwobMovieTheaterSeating {
 
         public static boolean canSitTogether(int[] nums, int indexDiff, int valueDiff) {
             TreeSet<Integer> window = new TreeSet<>();

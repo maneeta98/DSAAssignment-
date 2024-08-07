@@ -4,7 +4,7 @@ package com.example.dsaassignmentindv;
 import java.util.Arrays;
 import java.util.PriorityQueue;
 
-public class ClassScheduler {
+public class OneaClassScheduler {
 
     public static int scheduleClasses(int n, int[][] classes) {
         // Step 1: Sort classes based on start time, and if start times are the same, by end time
