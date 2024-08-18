@@ -16,38 +16,83 @@ public class Q7DeliveryRouteOptimizer extends JFrame {
 
     public Q7DeliveryRouteOptimizer() {
         setTitle("Delivery Route Optimizer");
-        setSize(600, 400);
+        setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(new BorderLayout());
+        setLayout(new BorderLayout(10, 10));
+        setLocationRelativeTo(null);  // Center the window
 
-        deliveryListArea = new JTextArea(10, 30);
+        // Input Panel
+        JPanel inputPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.EAST;
+        inputPanel.add(new JLabel("Delivery List:"), gbc);
+
+        deliveryListArea = new JTextArea(8, 30);
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.BOTH;
+        inputPanel.add(new JScrollPane(deliveryListArea), gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.gridwidth = 1;
+        inputPanel.add(new JLabel("Select Algorithm:"), gbc);
+
         algorithmComboBox = new JComboBox<>(new String[]{"Dijkstra", "A*"});
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        inputPanel.add(algorithmComboBox, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        inputPanel.add(new JLabel("Vehicle Capacity:"), gbc);
+
         vehicleCapacityField = new JTextField(10);
+        gbc.gridx = 1;
+        gbc.gridy = 2;
+        gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        inputPanel.add(vehicleCapacityField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        inputPanel.add(new JLabel("Distance Constraint:"), gbc);
+
         distanceConstraintField = new JTextField(10);
+        gbc.gridx = 1;
+        gbc.gridy = 3;
+        gbc.gridwidth = 2;
+        inputPanel.add(distanceConstraintField, gbc);
+
         optimizeButton = new JButton("Optimize Route");
+        gbc.gridx = 1;
+        gbc.gridy = 4;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.CENTER;
+        inputPanel.add(optimizeButton, gbc);
+
+        add(inputPanel, BorderLayout.NORTH);
+
+        // Route Visualization Panel
         routePanel = new JPanel();
+        routePanel.setLayout(new BoxLayout(routePanel, BoxLayout.Y_AXIS));
+        routePanel.setBorder(BorderFactory.createTitledBorder("Optimized Route"));
+        add(new JScrollPane(routePanel), BorderLayout.CENTER);
 
-        JPanel inputPanel = new JPanel();
-        inputPanel.setLayout(new GridLayout(5, 2)); // Set layout to GridLayout for better alignment
-        inputPanel.add(new JLabel("Delivery List:"));
-        inputPanel.add(new JScrollPane(deliveryListArea));
-        inputPanel.add(new JLabel("Select Algorithm:"));
-        inputPanel.add(algorithmComboBox);
-        inputPanel.add(new JLabel("Vehicle Capacity:"));
-        inputPanel.add(vehicleCapacityField);
-        inputPanel.add(new JLabel("Distance Constraint:"));
-        inputPanel.add(distanceConstraintField);
-        inputPanel.add(optimizeButton);
-
+        // Action Listener for Optimize Button
         optimizeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 optimizeRoute();
             }
         });
-
-        add(inputPanel, BorderLayout.NORTH);
-        add(routePanel, BorderLayout.CENTER);
     }
 
     private void optimizeRoute() {
@@ -55,20 +100,26 @@ public class Q7DeliveryRouteOptimizer extends JFrame {
         new Thread(() -> {
             // Placeholder for route optimization logic
             List<String> optimizedRoute = calculateOptimalRoute();
-            visualizeRoute(optimizedRoute);
+            SwingUtilities.invokeLater(() -> visualizeRoute(optimizedRoute));
         }).start();
     }
 
     private List<String> calculateOptimalRoute() {
         // Implement chosen optimization algorithm here
-        return List.of("Stop 1", "Stop 2", "Stop 3"); // Example output
+        return List.of("Stop 1", "Stop 2", "Stop 3", "Stop 4"); // Example output
     }
 
     private void visualizeRoute(List<String> route) {
         // Clear previous route visualization
         routePanel.removeAll();
         for (String stop : route) {
-            routePanel.add(new JLabel(stop));
+            JLabel stopLabel = new JLabel(stop);
+            stopLabel.setFont(new Font("Arial", Font.PLAIN, 16));
+            stopLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+            stopLabel.setBackground(Color.LIGHT_GRAY);
+            stopLabel.setOpaque(true);
+            stopLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            routePanel.add(stopLabel);
         }
         routePanel.revalidate();
         routePanel.repaint();

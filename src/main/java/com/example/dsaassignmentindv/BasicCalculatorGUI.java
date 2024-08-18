@@ -8,168 +8,189 @@ import java.util.Stack;
 
 public class BasicCalculatorGUI extends JFrame {
     private JTextField inputField;
-    private JButton[] numberButtons;
-    private JButton decimalButton, equalsButton, addButton, subtractButton, multiplyButton, divideButton;
-    private JButton clearButton, sqrtButton, changeSignButton, percentButton, memoryButton;
     private JLabel resultLabel;
-    private double memory = 0;
+    private JPanel buttonPanel;
+    private double memoryValue = 0; // Declare and initialize memoryValue
 
     public BasicCalculatorGUI() {
         setTitle("Basic Calculator");
-        setSize(400, 500);
+        setSize(400, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(new BorderLayout());
+        setLayout(new BorderLayout(10, 10));
+        setLocationRelativeTo(null);  // Center the window
+        setResizable(true);  // Allow resizing
+
+        // Create a panel for the display (inputField and resultLabel)
+        JPanel displayPanel = new JPanel();
+        displayPanel.setLayout(new GridLayout(2, 1));
+        displayPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         inputField = new JTextField();
-        inputField.setEditable(false);
-        inputField.setFont(new Font("Arial", Font.PLAIN, 24));
-
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new GridLayout(5, 4, 5, 5));
-
-        initializeButtons();
-
-        // Add buttons to the panel
-        for (int i = 1; i <= 9; i++) {
-            buttonPanel.add(numberButtons[i]);
-        }
-        buttonPanel.add(decimalButton);
-        buttonPanel.add(numberButtons[0]);
-        buttonPanel.add(equalsButton);
-        buttonPanel.add(addButton);
-        buttonPanel.add(subtractButton);
-        buttonPanel.add(multiplyButton);
-        buttonPanel.add(divideButton);
-        buttonPanel.add(clearButton);
-        buttonPanel.add(sqrtButton);
-        buttonPanel.add(changeSignButton);
-        buttonPanel.add(percentButton);
-        buttonPanel.add(memoryButton);
+        inputField.setFont(new Font("Arial", Font.PLAIN, 30));  // Bigger font for the display
+        inputField.setHorizontalAlignment(JTextField.RIGHT);
+        displayPanel.add(inputField);
 
         resultLabel = new JLabel("Result: ");
-        resultLabel.setFont(new Font("Arial", Font.PLAIN, 18));
-        resultLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+        resultLabel.setFont(new Font("Arial", Font.PLAIN, 24));  // Larger font for result
+        resultLabel.setOpaque(true);
+        resultLabel.setBackground(Color.WHITE);
+        resultLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        displayPanel.add(resultLabel);
 
-        add(inputField, BorderLayout.NORTH);
-        add(buttonPanel, BorderLayout.CENTER);
-        add(resultLabel, BorderLayout.SOUTH);
+        add(displayPanel, BorderLayout.NORTH);  // Add display panel at the top
 
-        pack();
+        buttonPanel = new JPanel();
+        buttonPanel.setLayout(new GridLayout(6, 4, 10, 10));
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));  // Add padding around the buttons
+        addButtons(buttonPanel);
+        add(buttonPanel, BorderLayout.CENTER);  // Add button panel in the center
+
+        setVisible(true);
     }
 
-    private void initializeButtons() {
-        // Number buttons 0-9
-        numberButtons = new JButton[10];
-        for (int i = 0; i < 10; i++) {
-            numberButtons[i] = createButton(String.valueOf(i), e -> inputField.setText(inputField.getText() + e.getActionCommand()));
-        }
+    private void addButtons(JPanel panel) {
+        String[] buttons = {
+                "7", "8", "9", "/",
+                "4", "5", "6", "*",
+                "1", "2", "3", "-",
+                "0", "(", ")", "+",
+                "C", "Del", "=", ".",
+                "M+", "M-", "MR", "MC"
+        };
 
-        decimalButton = createButton(".", e -> inputField.setText(inputField.getText() + "."));
-        equalsButton = createButton("=", e -> calculateResult());
-        addButton = createButton("+", e -> inputField.setText(inputField.getText() + " + "));
-        subtractButton = createButton("-", e -> inputField.setText(inputField.getText() + " - "));
-        multiplyButton = createButton("*", e -> inputField.setText(inputField.getText() + " * "));
-        divideButton = createButton("/", e -> inputField.setText(inputField.getText() + " / "));
-        clearButton = createButton("C", e -> inputField.setText(""));
-        sqrtButton = createButton("√", e -> calculateSquareRoot());
-        changeSignButton = createButton("±", e -> changeSign());
-        percentButton = createButton("%", e -> inputField.setText(inputField.getText() + " % "));
-        memoryButton = createButton("M", e -> handleMemory());
-    }
-
-    private JButton createButton(String text, ActionListener listener) {
-        JButton button = new JButton(text);
-        button.setFont(new Font("Arial", Font.PLAIN, 18));
-        button.addActionListener(listener);
-        return button;
-    }
-
-    private void calculateResult() {
-        try {
-            String expression = inputField.getText();
-            int result = evaluateExpression(expression);
-            resultLabel.setText("Result: " + result);
-            inputField.setText(String.valueOf(result));
-        } catch (Exception ex) {
-            resultLabel.setText("Error: Invalid Expression");
+        for (String text : buttons) {
+            JButton button = new JButton(text);
+            button.setFont(new Font("Arial", Font.PLAIN, 24));
+            button.addActionListener(new ButtonClickListener());
+            panel.add(button);
         }
     }
 
-    private void calculateSquareRoot() {
-        try {
-            double value = Double.parseDouble(inputField.getText());
-            double result = Math.sqrt(value);
-            resultLabel.setText("Result: " + result);
-            inputField.setText(String.valueOf(result));
-        } catch (NumberFormatException ex) {
-            resultLabel.setText("Error: Invalid Input");
-        }
-    }
+    private class ButtonClickListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            String command = e.getActionCommand();
 
-    private void changeSign() {
-        try {
-            double value = Double.parseDouble(inputField.getText());
-            value = -value;
-            inputField.setText(String.valueOf(value));
-        } catch (NumberFormatException ex) {
-            resultLabel.setText("Error: Invalid Input");
-        }
-    }
-
-    private void handleMemory() {
-        try {
-            double currentValue = Double.parseDouble(inputField.getText());
-            memory = currentValue;
-            inputField.setText("");
-            resultLabel.setText("Memory: " + memory);
-        } catch (NumberFormatException ex) {
-            resultLabel.setText("Error: Invalid Input");
-        }
-    }
-
-    private int evaluateExpression(String s) {
-        int len = s.length();
-        Stack<Integer> numbers = new Stack<>();
-        Stack<Character> operations = new Stack<>();
-        int num = 0;
-        char operation = '+';
-
-        for (int i = 0; i < len; i++) {
-            char ch = s.charAt(i);
-            if (Character.isDigit(ch)) {
-                num = num * 10 + (ch - '0');
+            switch (command) {
+                case "=":
+                    String expression = inputField.getText();
+                    try {
+                        int result = evaluateExpression(expression);
+                        resultLabel.setText("Result: " + result);
+                    } catch (ArithmeticException ex) {
+                        resultLabel.setText("Error: " + ex.getMessage());
+                    } catch (Exception ex) {
+                        resultLabel.setText("Error: Invalid Expression");
+                    }
+                    break;
+                case "C":
+                    inputField.setText("");
+                    resultLabel.setText("Result: ");
+                    break;
+                case "Del":
+                    String currentText = inputField.getText();
+                    if (!currentText.isEmpty()) {
+                        inputField.setText(currentText.substring(0, currentText.length() - 1));
+                    }
+                    break;
+                case "M+":
+                    memoryValue += getResultAsDouble();
+                    break;
+                case "M-":
+                    memoryValue -= getResultAsDouble();
+                    break;
+                case "MR":
+                    inputField.setText(inputField.getText() + memoryValue);
+                    break;
+                case "MC":
+                    memoryValue = 0;
+                    break;
+                default:
+                    inputField.setText(inputField.getText() + command);
+                    break;
             }
-            if (ch == '(') {
-                int j = i, count = 0;
-                while (i < len) {
-                    if (s.charAt(i) == '(') count++;
-                    if (s.charAt(i) == ')') count--;
-                    if (count == 0) break;
+        }
+
+        private double getResultAsDouble() {
+            String resultText = resultLabel.getText().replace("Result: ", "").trim();
+            try {
+                return Double.parseDouble(resultText);
+            } catch (NumberFormatException ex) {
+                return 0;
+            }
+        }
+    }
+
+    private int evaluateExpression(String expression) {
+        return evaluate(expression.replaceAll(" ", ""));
+    }
+
+    private int evaluate(String expression) {
+        Stack<Integer> values = new Stack<>();
+        Stack<Character> operators = new Stack<>();
+
+        for (int i = 0; i < expression.length(); i++) {
+            char c = expression.charAt(i);
+
+            if (Character.isDigit(c)) {
+                int value = 0;
+                while (i < expression.length() && Character.isDigit(expression.charAt(i))) {
+                    value = value * 10 + (expression.charAt(i) - '0');
                     i++;
                 }
-                num = evaluateExpression(s.substring(j + 1, i));
-            }
-            if (!Character.isDigit(ch) && ch != ' ' || i == len - 1) {
-                if (operation == '+') numbers.push(num);
-                if (operation == '-') numbers.push(-num);
-                if (operation == '*') numbers.push(numbers.pop() * num);
-                if (operation == '/') numbers.push(numbers.pop() / num);
-                operation = ch;
-                num = 0;
+                values.push(value);
+                i--;
+            } else if (c == '(') {
+                operators.push(c);
+            } else if (c == ')') {
+                while (operators.peek() != '(') {
+                    values.push(applyOperator(operators.pop(), values.pop(), values.pop()));
+                }
+                operators.pop();
+            } else if (isOperator(c)) {
+                while (!operators.isEmpty() && hasPrecedence(c, operators.peek())) {
+                    values.push(applyOperator(operators.pop(), values.pop(), values.pop()));
+                }
+                operators.push(c);
             }
         }
 
-        int result = 0;
-        while (!numbers.isEmpty()) {
-            result += numbers.pop();
+        while (!operators.isEmpty()) {
+            values.push(applyOperator(operators.pop(), values.pop(), values.pop()));
         }
-        return result;
+
+        return values.pop();
+    }
+
+    private int applyOperator(char operator, int b, int a) {
+        switch (operator) {
+            case '+':
+                return a + b;
+            case '-':
+                return a - b;
+            case '*':
+                return a * b;
+            case '/':
+                if (b == 0)
+                    throw new ArithmeticException("Division by zero");
+                return a / b;
+        }
+        return 0;
+    }
+
+    private boolean isOperator(char c) {
+        return c == '+' || c == '-' || c == '*' || c == '/';
+    }
+
+    private boolean hasPrecedence(char op1, char op2) {
+        if (op2 == '(' || op2 == ')')
+            return false;
+        if ((op1 == '*' || op1 == '/') && (op2 == '+' || op2 == '-'))
+            return false;
+        return true;
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            BasicCalculatorGUI calculator = new BasicCalculatorGUI();
-            calculator.setVisible(true);
-        });
+        SwingUtilities.invokeLater(() -> new BasicCalculatorGUI());
     }
 }
